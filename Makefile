@@ -11,7 +11,7 @@ OBJS := $(SRCS:%.c=$(BUILD)/%.o)
 TEST_SRCS := $(wildcard tests/test_*.c)
 TEST_BINS := $(TEST_SRCS:tests/%.c=$(BUILD)/%)
 
-LIB := $(BUILD)/libmllhep.a
+LIB := $(BUILD)/libcamml.a
 
 .PHONY: all lib test clean
 

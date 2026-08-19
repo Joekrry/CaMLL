@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MLLHEP_TWO_PI 6.283185307179586476925286766559
+#define CAMML_TWO_PI 6.283185307179586476925286766559
 
 Vec vec_alloc(Arena *a, usize len) {
     Vec v;
@@ -205,7 +205,7 @@ f64 rng_normal(Rng *r, f64 mean, f64 stddev) {
     f64 u2 = rng_uniform(r, 0.0, 1.0);
     /* avoid log(0) */
     if (u1 < 1e-300) u1 = 1e-300;
-    f64 z = sqrt(-2.0 * log(u1)) * cos(MLLHEP_TWO_PI * u2);
+    f64 z = sqrt(-2.0 * log(u1)) * cos(CAMML_TWO_PI * u2);
     return mean + z * stddev;
 }
 
