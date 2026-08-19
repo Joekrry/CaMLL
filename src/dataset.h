@@ -1,5 +1,5 @@
-#ifndef CAMML_SRC_DATASET_H
-#define CAMML_SRC_DATASET_H
+#ifndef CAMLL_SRC_DATASET_H
+#define CAMLL_SRC_DATASET_H
 
 #include "types.h"
 #include "alloc/arena.h"
@@ -35,4 +35,4 @@ typedef struct {
 Standardizer standardizer_fit(Arena *a, const Mat *X);
 Mat standardizer_apply(Arena *a, const Standardizer *s, const Mat *X);
 
-#endif /* CAMML_SRC_DATASET_H */
+#endif /* CAMLL_SRC_DATASET_H */

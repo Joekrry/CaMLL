@@ -1,8 +1,8 @@
-# CAMML
+# CaMLL
 
-**Project**: `CAMML`, a machine learning library written in C (Raw C11).
+**Project**: `CaMLL`, a machine learning library written in C (Raw C11).
 
-**About**: `CAMML` provides the classical and deep learning building blocks for supervised learning — regression and classification — on dense numeric data. It is written from scratch in C11 with no external dependencies: the numeric type aliases, an arena allocator, dense vector and matrix types, dataset loading and the models are all in-repository.
+**About**: `CaMLL` provides the classical and deep learning building blocks for supervised learning — regression and classification — on dense numeric data. It is written from scratch in C11 with no external dependencies: the numeric type aliases, an arena allocator, dense vector and matrix types, dataset loading and the models are all in-repository.
 
 ---
 
@@ -16,7 +16,7 @@
 
 ### Overview
 
-`CAMML` is organised as a static C library with an accompanying test suite. The build is driven by `Makefile`, which archives the sources under `src/` and `alloc/` into `build/libcamml.a` and compiles each test under `tests/` into its own executable.
+`CaMLL` is organised as a static C library with an accompanying test suite. The build is driven by `Makefile`, which archives the sources under `src/` and `alloc/` into `build/libcamll.a` and compiles each test under `tests/` into its own executable.
 
 Layered architecture (current):
 ```
@@ -50,8 +50,8 @@ types.h  --->  alloc/  --->  src/  --->  tests/
 
 **Step-by-step setup**
 ```bash
-git clone https://github.com/Joekrry/camml
-cd camml
+git clone https://github.com/Joekrry/CaMLL
+cd CaMLL
 make
 ```
 `make` archives the static library into `build/`. The `build/` directory is created on demand and is not tracked in version control.
@@ -65,7 +65,7 @@ make test
 
 | Path | Contents |
 |------|----------|
-| `build/libcamml.a` | Compiled static library. |
+| `build/libcamll.a` | Compiled static library. |
 | `build/test_*` | Compiled test executables. |
 
 ---

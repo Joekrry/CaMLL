@@ -1,5 +1,5 @@
-#ifndef CAMML_SRC_LINREG_H
-#define CAMML_SRC_LINREG_H
+#ifndef CAMLL_SRC_LINREG_H
+#define CAMLL_SRC_LINREG_H
 
 #include "types.h"
 #include "alloc/arena.h"
@@ -24,4 +24,4 @@ Vec linreg_predict(Arena *a, const LinReg *model, const Mat *X);
 /* Mean squared error between predictions and targets. */
 f64 linreg_mse(const Vec *y_true, const Vec *y_pred);
 
-#endif /* CAMML_SRC_LINREG_H */
+#endif /* CAMLL_SRC_LINREG_H */

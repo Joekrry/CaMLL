@@ -1,5 +1,5 @@
-#ifndef CAMML_TESTS_TEST_H
-#define CAMML_TESTS_TEST_H
+#ifndef CAMLL_TESTS_TEST_H
+#define CAMLL_TESTS_TEST_H
 
 #include <stdio.h>
 #include <math.h>
@@ -43,4 +43,4 @@ static inline int test_summary(const char *name) {
 
 #define TEST_SUMMARY(name) test_summary(name)
 
-#endif /* CAMML_TESTS_TEST_H */
+#endif /* CAMLL_TESTS_TEST_H */

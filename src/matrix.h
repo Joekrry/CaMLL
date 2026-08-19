@@ -1,5 +1,5 @@
-#ifndef CAMML_SRC_MATRIX_H
-#define CAMML_SRC_MATRIX_H
+#ifndef CAMLL_SRC_MATRIX_H
+#define CAMLL_SRC_MATRIX_H
 
 #include "types.h"
 #include "alloc/arena.h"
@@ -84,4 +84,4 @@ Mat mat_rand_normal(Arena *a, usize rows, usize cols, Rng *r, f64 mean, f64 stdd
 void vec_print(const Vec *v);
 void mat_print(const Mat *m);
 
-#endif /* CAMML_SRC_MATRIX_H */
+#endif /* CAMLL_SRC_MATRIX_H */
