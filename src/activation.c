@@ -17,3 +17,29 @@ Vec vec_sigmoid(Arena *a, const Vec *x) {
     }
     return r;
 }
+
+f64 sigmoid_deriv(f64 s) {
+    return s * (1.0 - s);
+}
+
+Vec vec_softmax(Arena *a, const Vec *x) {
+    Vec r = vec_alloc(a, x->len);
+
+    f64 max = x->data[0];
+    for (usize i = 1; i < x->len; i++) {
+        if (x->data[i] > max) max = x->data[i];
+    }
+
+    f64 sum = 0.0;
+    for (usize i = 0; i < x->len; i++) {
+        f64 e = exp(x->data[i] - max);
+        r.data[i] = e;
+        sum += e;
+    }
+
+    for (usize i = 0; i < x->len; i++) {
+        r.data[i] /= sum;
+    }
+
+    return r;
+}
