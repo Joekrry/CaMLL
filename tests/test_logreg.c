@@ -1,6 +1,7 @@
 #include "test.h"
 #include "src/logreg.h"
 #include "src/matrix.h"
+#include "src/metrics.h"
 #include "alloc/arena.h"
 
 int main(void) {
@@ -26,8 +27,8 @@ int main(void) {
     }
 
     Vec pred = logreg_predict(&a, &m, &X);
-    CHECK_NEAR(logreg_accuracy(&y, &pred), 1.0, 1e-12);
-    CHECK(logreg_bce(&y, &proba) < 0.1);
+    CHECK_NEAR(metrics_accuracy(&y, &pred), 1.0, 1e-12);
+    CHECK(metrics_bce(&y, &proba) < 0.1);
 
     /* two features, separable by x0 - x1 > 0 */
     usize n2 = 8;
@@ -46,7 +47,7 @@ int main(void) {
     CHECK(m2.weights.data[1] < 0.0);
 
     Vec pred2 = logreg_predict(&a, &m2, &X2);
-    CHECK_NEAR(logreg_accuracy(&y2, &pred2), 1.0, 1e-12);
+    CHECK_NEAR(metrics_accuracy(&y2, &pred2), 1.0, 1e-12);
 
     arena_destroy(&a);
     return TEST_SUMMARY("logreg");

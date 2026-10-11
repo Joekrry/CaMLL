@@ -21,7 +21,4 @@ LinReg linreg_fit_gd(Arena *a, const Mat *X, const Vec *y, f64 lr, usize epochs)
 
 Vec linreg_predict(Arena *a, const LinReg *model, const Mat *X);
 
-/* Mean squared error between predictions and targets. */
-f64 linreg_mse(const Vec *y_true, const Vec *y_pred);
-
 #endif /* CAMLL_SRC_LINREG_H */

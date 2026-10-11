@@ -1,6 +1,7 @@
 #include "test.h"
 #include "src/linreg.h"
 #include "src/matrix.h"
+#include "src/metrics.h"
 #include "alloc/arena.h"
 
 int main(void) {
@@ -21,7 +22,7 @@ int main(void) {
     CHECK_NEAR(m.weights.data[0], 2.0, 1e-9);
 
     Vec pred = linreg_predict(&a, &m, &X);
-    CHECK_NEAR(linreg_mse(&y, &pred), 0.0, 1e-12);
+    CHECK_NEAR(metrics_mse(&y, &pred), 0.0, 1e-12);
 
     /* two features, exact plane: y = 3*x0 - x1 + 2 */
     usize n2 = 6;

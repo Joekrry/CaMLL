@@ -35,9 +35,10 @@ types.h  --->  alloc/  --->  src/  --->  tests/
 - **`alloc/arena.h`** - bump allocator that hands out memory by advancing an offset into `mmap`ed blocks. There is no per-object free; memory is reclaimed in bulk with `arena_reset` or rolled back to an `arena_mark`.
 - **`src/matrix.h`** - the `Vec` and `Mat` types, both dense `f64` with `Mat` stored row-major. Allocation is arena-backed, so the types carry no ownership and are freed with the arena rather than individually. Provides the core matrix operations (add, sub, scale, matmul, transpose), vector operations (dot, norms, elementwise mul/div, outer product), a seeded xorshift PRNG and debug printing.
 - **`src/dataset.h`** - the `Dataset` type (feature matrix plus target vector), CSV parsing, shuffled train/test splitting and per-column standardization.
+- **`src/metrics.h`** - shared evaluation metrics: mean squared error, binary cross-entropy, accuracy, and precision/recall/F1 via a binary confusion matrix.
 - **`src/linreg.h`** - linear regression, fit either in closed form via the normal equations or by batch gradient descent.
 - **`src/activation.h`** - sigmoid (with derivative) and softmax, both scalar and vectorized.
-- **`src/logreg.h`** - logistic regression, fit by batch gradient descent on binary cross-entropy loss, with probability/class prediction and an accuracy metric.
+- **`src/logreg.h`** - logistic regression, fit by batch gradient descent on binary cross-entropy loss, with probability and class prediction.
 - **`tests/test.h`** - single-header assertion harness. Each test file is an independent executable that reports a pass or fail summary through `test_summary()`.
 
 ### Installation Instructions
@@ -87,6 +88,7 @@ make test
 | `tests/test_types.c` | Width and signedness of every alias in `types.h`. |
 | `tests/test_matrix.c` | Arena-backed allocation, add, sub, scale, matmul, transpose, dot, norms, elementwise ops, outer product and the seeded PRNG. |
 | `tests/test_dataset.c` | CSV parsing with the label in varying columns, train/test split row pairing, and standardization including the zero-variance guard. |
+| `tests/test_metrics.c` | Mean squared error, binary cross-entropy on confident correct/wrong predictions, accuracy, confusion matrix counts, and precision/recall/F1 including the no-positives degenerate case. |
 | `tests/test_linreg.c` | Closed-form and gradient descent fits on exactly-linear data, prediction and mean squared error. |
 | `tests/test_activation.c` | Sigmoid and its derivative, and softmax (sums to 1, shift invariance, uniform input). |
 | `tests/test_logreg.c` | Gradient descent fits on linearly separable data, probability/class prediction, accuracy and binary cross-entropy. |

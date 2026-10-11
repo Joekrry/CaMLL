@@ -2,7 +2,6 @@
 #include "activation.h"
 
 #include <assert.h>
-#include <math.h>
 
 static Vec mat_vec_mul(Arena *a, const Mat *m, const Vec *x) {
     assert(m->cols == x->len);
@@ -79,26 +78,4 @@ Vec logreg_predict(Arena *a, const LogReg *model, const Mat *X) {
         pred.data[i] = proba.data[i] >= 0.5 ? 1.0 : 0.0;
     }
     return pred;
-}
-
-f64 logreg_bce(const Vec *y_true, const Vec *y_proba) {
-    assert(y_true->len == y_proba->len);
-    const f64 eps = 1e-12;
-    f64 s = 0.0;
-    for (usize i = 0; i < y_true->len; i++) {
-        f64 p = y_proba->data[i];
-        if (p < eps) p = eps;
-        if (p > 1.0 - eps) p = 1.0 - eps;
-        s -= y_true->data[i] * log(p) + (1.0 - y_true->data[i]) * log(1.0 - p);
-    }
-    return s / (f64)y_true->len;
-}
-
-f64 logreg_accuracy(const Vec *y_true, const Vec *y_pred) {
-    assert(y_true->len == y_pred->len);
-    usize correct = 0;
-    for (usize i = 0; i < y_true->len; i++) {
-        if (y_pred->data[i] == y_true->data[i]) correct++;
-    }
-    return (f64)correct / (f64)y_true->len;
 }

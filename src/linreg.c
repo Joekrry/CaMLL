@@ -150,13 +150,3 @@ Vec linreg_predict(Arena *a, const LinReg *model, const Mat *X) {
     }
     return pred;
 }
-
-f64 linreg_mse(const Vec *y_true, const Vec *y_pred) {
-    assert(y_true->len == y_pred->len);
-    f64 s = 0.0;
-    for (usize i = 0; i < y_true->len; i++) {
-        f64 d = y_pred->data[i] - y_true->data[i];
-        s += d * d;
-    }
-    return s / (f64)y_true->len;
-}

@@ -22,10 +22,4 @@ Vec logreg_predict_proba(Arena *a, const LogReg *model, const Mat *X);
 /* Predicted class, 0.0 or 1.0, by thresholding the probability at 0.5. */
 Vec logreg_predict(Arena *a, const LogReg *model, const Mat *X);
 
-/* Binary cross-entropy between true labels and predicted probabilities. */
-f64 logreg_bce(const Vec *y_true, const Vec *y_proba);
-
-/* Fraction of predicted labels matching the true labels. */
-f64 logreg_accuracy(const Vec *y_true, const Vec *y_pred);
-
 #endif /* CAMLL_SRC_LOGREG_H */
