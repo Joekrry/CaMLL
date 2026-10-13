@@ -39,6 +39,7 @@ types.h  --->  alloc/  --->  src/  --->  tests/
 - **`src/linreg.h`** - linear regression, fit either in closed form via the normal equations or by batch gradient descent.
 - **`src/activation.h`** - sigmoid (with derivative) and softmax, both scalar and vectorized.
 - **`src/logreg.h`** - logistic regression, fit by batch gradient descent on binary cross-entropy loss, with probability and class prediction.
+- **`src/softmax.h`** - softmax regression (multinomial logistic regression), fit by batch gradient descent on cross-entropy loss, with per-class probability and argmax class prediction.
 - **`tests/test.h`** - single-header assertion harness. Each test file is an independent executable that reports a pass or fail summary through `test_summary()`.
 
 ### Installation Instructions
@@ -92,6 +93,7 @@ make test
 | `tests/test_linreg.c` | Closed-form and gradient descent fits on exactly-linear data, prediction and mean squared error. |
 | `tests/test_activation.c` | Sigmoid and its derivative, and softmax (sums to 1, shift invariance, uniform input). |
 | `tests/test_logreg.c` | Gradient descent fits on linearly separable data, probability/class prediction, accuracy and binary cross-entropy. |
+| `tests/test_softmax.c` | Gradient descent fit on a three-class, linearly separable problem; per-class probabilities summing to 1, argmax class prediction and accuracy. |
 
 ### Test Results
 ```bash
