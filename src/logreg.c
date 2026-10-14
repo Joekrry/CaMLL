@@ -40,7 +40,7 @@ Vec logreg_predict_proba(Arena *a, const LogReg *model, const Mat *X) {
     return p;
 }
 
-LogReg logreg_fit_gd(Arena *a, const Mat *X, const Vec *y, f64 lr, usize epochs) {
+LogReg logreg_fit_gd(Arena *a, const Mat *X, const Vec *y, f64 lr, usize epochs, f64 l2) {
     assert(X->rows == y->len);
     usize n = X->rows;
     usize d = X->cols;
@@ -64,7 +64,7 @@ LogReg logreg_fit_gd(Arena *a, const Mat *X, const Vec *y, f64 lr, usize epochs)
         grad_b /= (f64)n;
 
         for (usize j = 0; j < d; j++) {
-            model.weights.data[j] -= lr * (grad_w.data[j] / (f64)n);
+            model.weights.data[j] -= lr * (grad_w.data[j] / (f64)n + l2 * model.weights.data[j]);
         }
         model.bias -= lr * grad_b;
     }

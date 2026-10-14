@@ -13,8 +13,10 @@ typedef struct {
 
 /* Batch gradient descent fit on binary cross-entropy loss: epochs full
    passes over the data at the given learning rate, starting from zero
-   weights and bias. y entries must be 0.0 or 1.0. */
-LogReg logreg_fit_gd(Arena *a, const Mat *X, const Vec *y, f64 lr, usize epochs);
+   weights and bias. y entries must be 0.0 or 1.0. l2 is the ridge penalty
+   strength applied to the weights only (not the bias); 0.0 disables
+   regularization. */
+LogReg logreg_fit_gd(Arena *a, const Mat *X, const Vec *y, f64 lr, usize epochs, f64 l2);
 
 /* Predicted probability of class 1. */
 Vec logreg_predict_proba(Arena *a, const LogReg *model, const Mat *X);

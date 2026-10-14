@@ -25,7 +25,7 @@ Mat softmax_predict_proba(Arena *a, const Softmax *model, const Mat *X) {
     return p;
 }
 
-Softmax softmax_fit_gd(Arena *a, const Mat *X, const Vec *y, usize num_classes, f64 lr, usize epochs) {
+Softmax softmax_fit_gd(Arena *a, const Mat *X, const Vec *y, usize num_classes, f64 lr, usize epochs, f64 l2) {
     assert(X->rows == y->len);
     usize n = X->rows;
     usize d = X->cols;
@@ -58,7 +58,7 @@ Softmax softmax_fit_gd(Arena *a, const Mat *X, const Vec *y, usize num_classes, 
             f64 *wrow = mat_row(&model.weights, c);
             const f64 *gwrow = mat_row(&grad_w, c);
             for (usize j = 0; j < d; j++) {
-                wrow[j] -= lr * (gwrow[j] / (f64)n);
+                wrow[j] -= lr * (gwrow[j] / (f64)n + l2 * wrow[j]);
             }
             model.bias.data[c] -= lr * (grad_b.data[c] / (f64)n);
         }

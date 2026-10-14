@@ -4,6 +4,8 @@
 #include "src/metrics.h"
 #include "alloc/arena.h"
 
+#include <math.h>
+
 int main(void) {
     Arena a = arena_create(0);
 
@@ -17,7 +19,7 @@ int main(void) {
         y.data[i] = xs[i] > 0.0 ? 1.0 : 0.0;
     }
 
-    LogReg m = logreg_fit_gd(&a, &X, &y, 0.5, 3000);
+    LogReg m = logreg_fit_gd(&a, &X, &y, 0.5, 3000, 0.0);
     CHECK(m.weights.data[0] > 0.0);
 
     Vec proba = logreg_predict_proba(&a, &m, &X);
@@ -29,6 +31,11 @@ int main(void) {
     Vec pred = logreg_predict(&a, &m, &X);
     CHECK_NEAR(metrics_accuracy(&y, &pred), 1.0, 1e-12);
     CHECK(metrics_bce(&y, &proba) < 0.1);
+
+    /* a strong ridge penalty shrinks the weight toward zero relative to
+       the unregularized fit */
+    LogReg m_l2 = logreg_fit_gd(&a, &X, &y, 0.5, 3000, 1.0);
+    CHECK(fabs(m_l2.weights.data[0]) < fabs(m.weights.data[0]));
 
     /* two features, separable by x0 - x1 > 0 */
     usize n2 = 8;
@@ -42,7 +49,7 @@ int main(void) {
         y2.data[i] = (x0s[i] - x1s[i]) > 0.0 ? 1.0 : 0.0;
     }
 
-    LogReg m2 = logreg_fit_gd(&a, &X2, &y2, 0.5, 3000);
+    LogReg m2 = logreg_fit_gd(&a, &X2, &y2, 0.5, 3000, 0.0);
     CHECK(m2.weights.data[0] > 0.0);
     CHECK(m2.weights.data[1] < 0.0);
 

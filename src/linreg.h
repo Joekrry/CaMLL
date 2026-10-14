@@ -16,8 +16,10 @@ typedef struct {
 LinReg linreg_fit_normal(Arena *a, const Mat *X, const Vec *y);
 
 /* Batch gradient descent fit: epochs full passes over the data at the
-   given learning rate, starting from zero weights and bias. */
-LinReg linreg_fit_gd(Arena *a, const Mat *X, const Vec *y, f64 lr, usize epochs);
+   given learning rate, starting from zero weights and bias. l2 is the
+   ridge penalty strength applied to the weights only (not the bias); 0.0
+   disables regularization. */
+LinReg linreg_fit_gd(Arena *a, const Mat *X, const Vec *y, f64 lr, usize epochs, f64 l2);
 
 Vec linreg_predict(Arena *a, const LinReg *model, const Mat *X);
 

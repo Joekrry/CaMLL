@@ -4,6 +4,8 @@
 #include "src/metrics.h"
 #include "alloc/arena.h"
 
+#include <math.h>
+
 int main(void) {
     Arena a = arena_create(0);
 
@@ -42,9 +44,15 @@ int main(void) {
     CHECK_NEAR(m2.weights.data[1], -1.0, 1e-8);
 
     /* gradient descent on the single-feature case should converge close */
-    LinReg gd = linreg_fit_gd(&a, &X, &y, 0.05, 2000);
+    LinReg gd = linreg_fit_gd(&a, &X, &y, 0.05, 2000, 0.0);
     CHECK_NEAR(gd.bias, 1.0, 0.05);
     CHECK_NEAR(gd.weights.data[0], 2.0, 0.05);
+
+    /* a strong ridge penalty shrinks the weight toward zero relative to
+       the unregularized fit, since only the weight (not the bias) is
+       penalized */
+    LinReg gd_l2 = linreg_fit_gd(&a, &X, &y, 0.05, 2000, 1.0);
+    CHECK(fabs(gd_l2.weights.data[0]) < fabs(gd.weights.data[0]));
 
     arena_destroy(&a);
     return TEST_SUMMARY("linreg");
