@@ -40,6 +40,7 @@ types.h  --->  alloc/  --->  src/  --->  tests/
 - **`src/activation.h`** - sigmoid (with derivative) and softmax, both scalar and vectorized.
 - **`src/logreg.h`** - logistic regression, fit by batch gradient descent on binary cross-entropy loss with an optional L2 penalty, with probability and class prediction.
 - **`src/softmax.h`** - softmax regression (multinomial logistic regression), fit by batch gradient descent on cross-entropy loss with an optional L2 penalty, with per-class probability and argmax class prediction.
+- **`src/knn.h`** - k-nearest neighbors, a lazy learner that stores the training set and predicts from the k closest rows by squared Euclidean distance, with both classification (majority vote) and regression (mean) prediction.
 - **`tests/test.h`** - single-header assertion harness. Each test file is an independent executable that reports a pass or fail summary through `test_summary()`.
 
 ### Installation Instructions
@@ -94,6 +95,7 @@ make test
 | `tests/test_activation.c` | Sigmoid and its derivative, and softmax (sums to 1, shift invariance, uniform input). |
 | `tests/test_logreg.c` | Gradient descent fits on linearly separable data, probability/class prediction, accuracy, binary cross-entropy, and weight shrinkage under an L2 penalty. |
 | `tests/test_softmax.c` | Gradient descent fit on a three-class, linearly separable problem; per-class probabilities summing to 1, argmax class prediction, accuracy, and weight shrinkage under an L2 penalty. |
+| `tests/test_knn.c` | Majority-vote classification on separated clusters (including an exact-match query with k=1), and mean regression on a linear grid (exact match at k=1, averaged neighbors at k=2). |
 
 ### Test Results
 ```bash
