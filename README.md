@@ -41,6 +41,7 @@ types.h  --->  alloc/  --->  src/  --->  tests/
 - **`src/logreg.h`** - logistic regression, fit by batch gradient descent on binary cross-entropy loss with an optional L2 penalty, with probability and class prediction.
 - **`src/softmax.h`** - softmax regression (multinomial logistic regression), fit by batch gradient descent on cross-entropy loss with an optional L2 penalty, with per-class probability and argmax class prediction.
 - **`src/knn.h`** - k-nearest neighbors, a lazy learner that stores the training set and predicts from the k closest rows by squared Euclidean distance, with both classification (majority vote) and regression (mean) prediction.
+- **`src/dense.h`** - a single feed-forward layer (`z = X * weightsᵗ + bias`) with a linear, sigmoid or softmax activation, exposing forward and backward passes so layers can be chained into a network.
 - **`tests/test.h`** - single-header assertion harness. Each test file is an independent executable that reports a pass or fail summary through `test_summary()`.
 
 ### Installation Instructions
@@ -96,6 +97,7 @@ make test
 | `tests/test_logreg.c` | Gradient descent fits on linearly separable data, probability/class prediction, accuracy, binary cross-entropy, and weight shrinkage under an L2 penalty. |
 | `tests/test_softmax.c` | Gradient descent fit on a three-class, linearly separable problem; per-class probabilities summing to 1, argmax class prediction, accuracy, and weight shrinkage under an L2 penalty. |
 | `tests/test_knn.c` | Majority-vote classification on separated clusters (including an exact-match query with k=1), and mean regression on a linear grid (exact match at k=1, averaged neighbors at k=2). |
+| `tests/test_dense.c` | Forward-pass shapes and activation ranges for linear, sigmoid and softmax layers, and a finite-difference gradient check of the weight, bias and input gradients returned by the backward pass. |
 
 ### Test Results
 ```bash
