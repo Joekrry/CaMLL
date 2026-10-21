@@ -8,8 +8,7 @@ int main(void) {
     Arena a = arena_create(0);
     Rng r = rng_seed(7);
 
-    /* XOR: not linearly separable, so solving it only works if backprop
-       reaches through the hidden layer. */
+    /* XOR is not linearly separable; a passing result exercises hidden-layer backprop. */
     usize n = 4, in_dim = 2;
     Mat X = mat_alloc(&a, n, in_dim);
     Vec y = vec_alloc(&a, n);
@@ -35,8 +34,7 @@ int main(void) {
     CHECK(pred.len == n);
     CHECK_NEAR(metrics_accuracy(&y, &pred), 1.0, 1e-12);
 
-    /* a strong ridge penalty shrinks every layer's weights toward zero
-       relative to the unregularized fit */
+    /* strong ridge penalty shrinks every layer's weights toward zero */
     Rng r2 = rng_seed(7);
     MLP net_l2 = mlp_create(&a, dims, 2, acts, &r2);
     mlp_fit_gd(&a, &net_l2, &X, &y, 0.5, 20000, 1.0);
@@ -52,8 +50,7 @@ int main(void) {
     }
     CHECK(norm_l2 < norm);
 
-    /* three-class softmax output on a single feature, same thresholds as
-       test_softmax.c, exercised through a hidden layer this time */
+    /* three-class softmax, same thresholds as test_softmax.c, through a hidden layer */
     usize nk = 9, k = 3;
     Mat Xk = mat_alloc(&a, nk, 1);
     Vec yk = vec_alloc(&a, nk);
