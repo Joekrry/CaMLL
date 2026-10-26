@@ -44,6 +44,7 @@ types.h  --->  alloc/  --->  src/  --->  tests/
 - **`src/dense.h`** - a single feed-forward layer (`z = X * weightsᵗ + bias`) with a linear, sigmoid or softmax activation, exposing forward and backward passes so layers can be chained into a network.
 - **`src/mlp.h`** - a multi-layer perceptron: a stack of `dense.h` layers, fit by batch gradient descent with backpropagation through the whole stack and an optional L2 penalty, supporting regression (linear output), binary classification (sigmoid output) and multiclass classification (softmax output).
 - **`src/persist.h`** - binary save/load of fitted weights for `linreg`, `logreg`, `softmax` and `mlp`, each file tagged with its model type so loading the wrong file asserts instead of silently misreading floats.
+- **`src/kmeans.h`** - k-means clustering, the first unsupervised model: partitions rows into k clusters via Lloyd's algorithm (nearest-centroid assignment, then centroid averaging) from a random initial pick of k distinct rows, with cluster prediction and inertia (within-cluster sum of squares).
 - **`tests/test.h`** - single-header assertion harness. Each test file is an independent executable that reports a pass or fail summary through `test_summary()`.
 
 ### Installation Instructions
@@ -102,6 +103,7 @@ make test
 | `tests/test_dense.c` | Forward-pass shapes and activation ranges for linear, sigmoid and softmax layers, and a finite-difference gradient check of the weight, bias and input gradients returned by the backward pass. |
 | `tests/test_mlp.c` | A hidden-sigmoid, output-sigmoid network solving XOR (not linearly separable, so only passes if backprop reaches the hidden layer), weight shrinkage across every layer under an L2 penalty, and a hidden-sigmoid, output-softmax network on the three-class problem from `test_softmax.c`. |
 | `tests/test_persist.c` | Binary save/load round-trips for `linreg`, `logreg`, `softmax` and `mlp`, checking that weights, biases and (for `mlp`) per-layer activations are recovered exactly and predictions on the loaded model match the original. |
+| `tests/test_kmeans.c` | Convergence on three well-separated clusters (consistent labels within each cluster, distinct across clusters, centroids landing exactly on the true centers, exact inertia), k=1 collapsing to the mean of all rows, and k=n reaching zero inertia. |
 
 ### Test Results
 ```bash
