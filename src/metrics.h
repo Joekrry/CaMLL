@@ -7,9 +7,8 @@
 /* Mean squared error between predictions and targets. */
 f64 metrics_mse(const Vec *y_true, const Vec *y_pred);
 
-/* Binary cross-entropy between true labels (0.0/1.0) and predicted
-   probabilities of class 1. Probabilities are clamped away from 0 and 1
-   to keep the log finite. */
+/* Binary cross-entropy: true labels (0.0/1.0) vs. predicted probability of
+   class 1. Probabilities are clamped away from 0/1 to keep the log finite. */
 f64 metrics_bce(const Vec *y_true, const Vec *y_proba);
 
 /* Fraction of predicted labels matching the true labels. */

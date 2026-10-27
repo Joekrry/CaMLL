@@ -11,9 +11,8 @@ typedef struct {
     Vec bias;
 } Softmax;
 
-/* Batch gradient descent fit on multinomial cross-entropy loss. l2 is the
-   ridge penalty strength applied to the weights only (not the bias); 0.0
-   disables regularization. */
+/* Batch GD fit on multinomial cross-entropy. l2 is the ridge penalty on
+   weights only; 0.0 disables it. */
 Softmax softmax_fit_gd(Arena *a, const Mat *X, const Vec *y, usize num_classes, f64 lr, usize epochs, f64 l2);
 
 /* Per-class predicted probabilities */

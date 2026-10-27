@@ -52,9 +52,9 @@ void mlp_fit_gd(Arena *a, MLP *net, const Mat *X, const Vec *y, f64 lr, usize ep
             inputs[i + 1] = outputs[i];
         }
 
-        /* Combined activation+loss gradient is output - target for all three
-           pairings (MSE, binary CE, multinomial CE). Pass as DENSE_LINEAR to
-           skip dense_backward's activation derivative. */
+        /* output - target is the combined gradient for all three pairings
+           (MSE, binary CE, multinomial CE). DENSE_LINEAR skips the
+           activation derivative in dense_backward. */
         Mat dz = mat_sub(a, &outputs[L - 1], &target);
         Dense out_identity = *out_layer;
         out_identity.activation = DENSE_LINEAR;

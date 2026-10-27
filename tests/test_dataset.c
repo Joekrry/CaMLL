@@ -22,7 +22,7 @@ int main(void) {
     CHECK_NEAR(d2.y.data[0], 1.0, 1e-12);
     CHECK_NEAR(d2.y.data[1], 0.0, 1e-12);
 
-    /* split: y = 100*x0 + x1 lets us confirm rows stay paired after shuffling */
+    /* split: y = 100*x0 + x1, to check rows stay paired after shuffling */
     usize n = 8;
     Dataset big;
     big.X = mat_alloc(&a, n, 2);

@@ -44,9 +44,8 @@ static Mat augment_ones(Arena *a, const Mat *X) {
     return Xb;
 }
 
-/* Solve A w = b for w via Gaussian elimination with partial pivoting.
-   A is n x n row-major, both A and b are overwritten; the solution ends up
-   in b. */
+/* Solves A w = b via Gaussian elimination with partial pivoting; A and b
+   are overwritten in place, solution ends up in b. */
 static void gauss_solve(f64 *A, f64 *b, usize n) {
     for (usize col = 0; col < n; col++) {
         usize piv = col;

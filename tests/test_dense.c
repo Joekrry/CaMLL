@@ -5,8 +5,8 @@
 
 #include <math.h>
 
-/* L = sum(dout .* dense_forward(layer, X)); dout is exactly dL/dout for
-   this L, giving a finite-difference check of dense_backward's gradients. */
+/* L = sum(dout .* dense_forward(layer, X)), with dout = dL/dout. Finite
+   differences on L check dense_backward's gradients. */
 static f64 forward_loss(Arena *a, const Dense *layer, const Mat *X, const Mat *dout) {
     Mat out = dense_forward(a, layer, X);
     f64 l = 0.0;

@@ -12,8 +12,8 @@ int main(void) {
     Arena a = arena_create(0);
 
     /* Three well-separated 2x2 "plus" clusters, centered at (0,0), (10,0)
-       and (0,10). Each point is exactly 1 unit from its true center, so the
-       expected inertia is exactly 3 * 4 * 1 = 12. */
+       and (0,10); each point is exactly 1 unit from its center. Expected
+       inertia: 3 * 4 * 1 = 12. */
     usize n = 12;
     Mat X = mat_alloc(&a, n, 2);
     set_row(&X, 0, -1.0, 0.0);

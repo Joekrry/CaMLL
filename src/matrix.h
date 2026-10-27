@@ -17,8 +17,8 @@ typedef struct {
     f64 *data;
 } Mat;
 
-/* Storage is arena-backed, so there is no per-object free. Reclaim in bulk
-   with arena_reset or arena_reset_to on the owning arena. */
+/* Storage is arena-backed: no per-object free. Reclaim in bulk with
+   arena_reset or arena_reset_to. */
 Vec vec_alloc(Arena *a, usize len);
 Vec vec_zeros(Arena *a, usize len);
 Vec vec_ones(Arena *a, usize len);
@@ -43,10 +43,8 @@ static inline f64 *mat_row(const Mat *m, usize r) {
     return m->data + r * m->cols;
 }
 
-/* Core linear algebra. Each op writes into a freshly allocated result from
-   the given arena; the operands are left untouched. Shape preconditions
-   (matching dims for add/sub, x->cols == y->rows for matmul) are checked
-   with assert. */
+/* Core linear algebra: each op allocates a fresh result and leaves
+   operands untouched. Shape mismatches are caught by assert. */
 Mat mat_add(Arena *a, const Mat *x, const Mat *y);
 Mat mat_sub(Arena *a, const Mat *x, const Mat *y);
 Mat mat_scale(Arena *a, const Mat *x, f64 s);
@@ -63,8 +61,7 @@ Vec vec_div(Arena *a, const Vec *x, const Vec *y);
 /* Outer product: x->len rows by y->len cols, result[i][j] = x[i] * y[j]. */
 Mat mat_outer(Arena *a, const Vec *x, const Vec *y);
 
-/* xorshift64star PRNG. Deterministic given a seed, no external entropy
-   source, so results are reproducible across runs. */
+/* xorshift64star PRNG: deterministic from the seed, no external entropy. */
 typedef struct {
     u64 state;
 } Rng;

@@ -91,7 +91,7 @@ void *arena_alloc_aligned(Arena *a, usize size, usize align)
         if (new_block_size < needed) {
             new_block_size = needed;
         }
-        /* geometric growth so repeated overflow doesn't thrash mmap */
+        /* geometric growth avoids thrashing mmap on repeated overflow */
         if (block && new_block_size < block->capacity * 2) {
             new_block_size = block->capacity * 2;
         }

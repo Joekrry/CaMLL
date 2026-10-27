@@ -13,8 +13,8 @@
 int main(void) {
     Arena a = arena_create(0);
 
-    /* linreg: closed-form fit on exactly-linear data, round-tripped weights
-       and predictions must match the original exactly */
+    /* linreg: closed-form fit on exact-linear data; round-tripped weights
+       and predictions must match exactly */
     usize n = 6;
     Mat X = mat_alloc(&a, n, 1);
     Vec y = vec_alloc(&a, n);
@@ -74,7 +74,7 @@ int main(void) {
     Mat sm_proba2 = softmax_predict_proba(&a, &sm2, &Xk);
     for (usize i = 0; i < nk * k; i++) CHECK_NEAR(sm_proba2.data[i], sm_proba.data[i], 1e-12);
 
-    /* mlp: hidden-sigmoid, output-softmax net from test_mlp.c, round-tripping
+    /* mlp: hidden-sigmoid, output-softmax net from test_mlp.c; round-trips
        every layer's activation, weights and bias */
     usize dims[3] = {1, 4, k};
     DenseActivation acts[2] = {DENSE_SIGMOID, DENSE_SOFTMAX};

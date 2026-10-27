@@ -8,10 +8,9 @@
 #include "softmax.h"
 #include "mlp.h"
 
-/* Binary save/load for fitted weights. Each file starts with a tag
-   identifying the model type, so loading the wrong file asserts instead of
-   silently misreading floats. Not portable across endianness or f64/usize
-   width. */
+/* Binary save/load for fitted weights. Each file starts with a tag for its
+   model type — loading the wrong file asserts instead of silently
+   misreading floats. Not portable across endianness or f64/usize width. */
 
 void persist_linreg_save(const LinReg *model, const char *path);
 LinReg persist_linreg_load(Arena *a, const char *path);
