@@ -46,6 +46,7 @@ types.h  --->  alloc/  --->  src/  --->  tests/
 - **`src/persist.h`** - binary save/load of fitted weights for `linreg`, `logreg`, `softmax` and `mlp`, each file tagged with its model type so loading the wrong file asserts instead of silently misreading floats.
 - **`src/kmeans.h`** - k-means clustering, the first unsupervised model: partitions rows into k clusters via Lloyd's algorithm (nearest-centroid assignment, then centroid averaging) from a random initial pick of k distinct rows, with cluster prediction and inertia (within-cluster sum of squares).
 - **`src/naivebayes.h`** - Gaussian Naive Bayes, a per-class, per-feature Gaussian density model with a `var_smoothing` term guarding against zero-variance features; predicts via per-class joint log-likelihood and argmax.
+- **`src/tree.h`** - a CART-style decision tree, the first recursive-structure model: binary splits on a single feature at a time, chosen by greedy impurity reduction (Gini or entropy for classification, variance reduction for regression), stopping at a max depth or minimum node size. Separate `tree_fit_classify`/`tree_fit_regress` entry points share one `tree_predict` that walks a row to its leaf.
 - **`tests/test.h`** - single-header assertion harness. Each test file is an independent executable that reports a pass or fail summary through `test_summary()`.
 
 ### Installation Instructions
@@ -106,6 +107,7 @@ make test
 | `tests/test_persist.c` | Binary save/load round-trips for `linreg`, `logreg`, `softmax` and `mlp`, checking that weights, biases and (for `mlp`) per-layer activations are recovered exactly and predictions on the loaded model match the original. |
 | `tests/test_kmeans.c` | Convergence on three well-separated clusters (consistent labels within each cluster, distinct across clusters, centroids landing exactly on the true centers, exact inertia), k=1 collapsing to the mean of all rows, and k=n reaching zero inertia. |
 | `tests/test_naivebayes.c` | Binary classification on well-separated 2-D clusters with exact class means recovered; a three-class problem mirroring `test_softmax.c`'s, checking log-likelihood shape and argmax accuracy; and a zero-raw-variance feature, checking `var_smoothing` keeps the variance and log-likelihood finite instead of NaN/Inf. |
+| `tests/test_tree.c` | Gini and entropy classification on well-separated 2-D clusters and on the three-class line from `test_softmax.c`; a `max_depth = 0` stump collapsing to one majority-vote leaf; a pure node staying a leaf despite room to split; exact-fit regression on a two-level step function; and a `min_samples_split` forbidding any split, collapsing regression to the overall mean. |
 
 ### Test Results
 ```bash
