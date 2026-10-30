@@ -46,7 +46,8 @@ types.h  --->  alloc/  --->  src/  --->  tests/
 - **`src/persist.h`** - binary save/load of fitted weights for `linreg`, `logreg`, `softmax` and `mlp`, each file tagged with its model type so loading the wrong file asserts instead of silently misreading floats.
 - **`src/kmeans.h`** - k-means clustering, the first unsupervised model: partitions rows into k clusters via Lloyd's algorithm (nearest-centroid assignment, then centroid averaging) from a random initial pick of k distinct rows, with cluster prediction and inertia (within-cluster sum of squares).
 - **`src/naivebayes.h`** - Gaussian Naive Bayes, a per-class, per-feature Gaussian density model with a `var_smoothing` term guarding against zero-variance features; predicts via per-class joint log-likelihood and argmax.
-- **`src/tree.h`** - a CART-style decision tree, the first recursive-structure model: binary splits on a single feature at a time, chosen by greedy impurity reduction (Gini or entropy for classification, variance reduction for regression), stopping at a max depth or minimum node size. Separate `tree_fit_classify`/`tree_fit_regress` entry points share one `tree_predict` that walks a row to its leaf.
+- **`src/tree.h`** - a CART-style decision tree, the first recursive-structure model: binary splits on a single feature at a time, chosen by greedy impurity reduction (Gini or entropy for classification, variance reduction for regression), stopping at a max depth or minimum node size. Separate `tree_fit_classify`/`tree_fit_regress` entry points share one `tree_predict` that walks a row to its leaf. Each split can optionally search a random subset of features (`max_features`) instead of all of them, for `forest.h`.
+- **`src/forest.h`** - random forest, a bagging ensemble of `tree.h` trees: each tree fits a bootstrap resample of the rows with a random feature subset per split, and the forest predicts by majority vote (classification) or mean (regression) across its trees.
 - **`tests/test.h`** - single-header assertion harness. Each test file is an independent executable that reports a pass or fail summary through `test_summary()`.
 
 ### Installation Instructions
@@ -108,6 +109,7 @@ make test
 | `tests/test_kmeans.c` | Convergence on three well-separated clusters (consistent labels within each cluster, distinct across clusters, centroids landing exactly on the true centers, exact inertia), k=1 collapsing to the mean of all rows, and k=n reaching zero inertia. |
 | `tests/test_naivebayes.c` | Binary classification on well-separated 2-D clusters with exact class means recovered; a three-class problem mirroring `test_softmax.c`'s, checking log-likelihood shape and argmax accuracy; and a zero-raw-variance feature, checking `var_smoothing` keeps the variance and log-likelihood finite instead of NaN/Inf. |
 | `tests/test_tree.c` | Gini and entropy classification on well-separated 2-D clusters and on the three-class line from `test_softmax.c`; a `max_depth = 0` stump collapsing to one majority-vote leaf; a pure node staying a leaf despite room to split; exact-fit regression on a two-level step function; and a `min_samples_split` forbidding any split, collapsing regression to the overall mean. |
+| `tests/test_forest.c` | Perfect-accuracy classification on the same 2-D clusters and three-class line as `test_tree.c`, with and without `max_features` restricting splits to a random subset; a single-tree forest; and regression on the two-level step function landing close to each true value after bagging and averaging. |
 
 ### Test Results
 ```bash

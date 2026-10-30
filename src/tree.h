@@ -27,9 +27,11 @@ typedef struct {
 } Tree;
 
 Tree tree_fit_classify(Arena *a, const Mat *X, const Vec *y, usize num_classes,
-                       TreeCriterion criterion, usize max_depth, usize min_samples_split);
+                       TreeCriterion criterion, usize max_depth, usize min_samples_split,
+                       usize max_features, Rng *rng);
 
-Tree tree_fit_regress(Arena *a, const Mat *X, const Vec *y, usize max_depth, usize min_samples_split);
+Tree tree_fit_regress(Arena *a, const Mat *X, const Vec *y, usize max_depth, usize min_samples_split,
+                      usize max_features, Rng *rng);
 
 Vec tree_predict(Arena *a, const Tree *model, const Mat *X);
 

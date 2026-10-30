@@ -25,16 +25,16 @@ int main(void) {
     set_row(&X, 7, 10.0, 11.0);
     for (usize i = 0; i < n; i++) y.data[i] = i < 4 ? 0.0 : 1.0;
 
-    Tree gini = tree_fit_classify(&a, &X, &y, 2, TREE_GINI, 4, 2);
+    Tree gini = tree_fit_classify(&a, &X, &y, 2, TREE_GINI, 4, 2, 0, NULL);
     CHECK(!gini.root->is_leaf);
     Vec pred_gini = tree_predict(&a, &gini, &X);
     CHECK_NEAR(metrics_accuracy(&y, &pred_gini), 1.0, 1e-12);
 
-    Tree entropy = tree_fit_classify(&a, &X, &y, 2, TREE_ENTROPY, 4, 2);
+    Tree entropy = tree_fit_classify(&a, &X, &y, 2, TREE_ENTROPY, 4, 2, 0, NULL);
     Vec pred_entropy = tree_predict(&a, &entropy, &X);
     CHECK_NEAR(metrics_accuracy(&y, &pred_entropy), 1.0, 1e-12);
 
-    Tree stump = tree_fit_classify(&a, &X, &y, 2, TREE_GINI, 0, 2);
+    Tree stump = tree_fit_classify(&a, &X, &y, 2, TREE_GINI, 0, 2, 0, NULL);
     CHECK(stump.root->is_leaf);
     Vec pred_stump = tree_predict(&a, &stump, &X);
     for (usize i = 0; i < n; i++) CHECK(pred_stump.data[i] == pred_stump.data[0]);
@@ -45,7 +45,7 @@ int main(void) {
         mat_set(&Xp, i, 0, (f64)i);
         yp.data[i] = 1.0;
     }
-    Tree pure = tree_fit_classify(&a, &Xp, &yp, 2, TREE_GINI, 4, 2);
+    Tree pure = tree_fit_classify(&a, &Xp, &yp, 2, TREE_GINI, 4, 2, 0, NULL);
     CHECK(pure.root->is_leaf);
     CHECK_NEAR(pure.root->value, 1.0, 1e-12);
 
@@ -58,7 +58,7 @@ int main(void) {
         mat_set(&Xk, i, 0, xs[i]);
         yk.data[i] = (f64)(i / 3);
     }
-    Tree treek = tree_fit_classify(&a, &Xk, &yk, k, TREE_ENTROPY, 4, 2);
+    Tree treek = tree_fit_classify(&a, &Xk, &yk, k, TREE_ENTROPY, 4, 2, 0, NULL);
     Vec predk = tree_predict(&a, &treek, &Xk);
     CHECK_NEAR(metrics_accuracy(&yk, &predk), 1.0, 1e-12);
 
@@ -71,13 +71,13 @@ int main(void) {
         mat_set(&Xr, i, 0, rxs[i]);
         yr.data[i] = rys[i];
     }
-    Tree reg = tree_fit_regress(&a, &Xr, &yr, 4, 2);
+    Tree reg = tree_fit_regress(&a, &Xr, &yr, 4, 2, 0, NULL);
     CHECK(!reg.root->is_leaf);
     Vec predr = tree_predict(&a, &reg, &Xr);
     for (usize i = 0; i < nr; i++) CHECK_NEAR(predr.data[i], rys[i], 1e-12);
     CHECK_NEAR(metrics_mse(&yr, &predr), 0.0, 1e-12);
 
-    Tree reg_stump = tree_fit_regress(&a, &Xr, &yr, 4, nr + 1);
+    Tree reg_stump = tree_fit_regress(&a, &Xr, &yr, 4, nr + 1, 0, NULL);
     CHECK(reg_stump.root->is_leaf);
     CHECK_NEAR(reg_stump.root->value, 3.0, 1e-12);
 

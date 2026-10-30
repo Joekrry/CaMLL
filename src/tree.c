@@ -47,11 +47,26 @@ typedef struct {
     TreeCriterion criterion;
     usize max_depth;
     usize min_samples_split;
+    usize max_features;
+    Rng *rng;
     Arena *a;
     usize *count_total;
     usize *count_left;
     usize *count_right;
+    usize *cols;
 } TreeClassifyCtx;
+
+static usize tree_select_features(usize *cols, usize d, usize max_features, Rng *rng) {
+    if (max_features == 0 || max_features >= d) return d;
+    for (usize i = 0; i < max_features; i++) {
+        usize j = i + (usize)rng_uniform(rng, 0.0, (f64)(d - i));
+        if (j >= d) j = d - 1;
+        usize t = cols[i];
+        cols[i] = cols[j];
+        cols[j] = t;
+    }
+    return max_features;
+}
 
 static f64 tree_impurity_counts(const usize *count, usize num_classes, usize n, TreeCriterion criterion) {
     if (n == 0) return 0.0;
@@ -107,9 +122,11 @@ static TreeNode *tree_build_classify(TreeClassifyCtx *ctx, usize *idx, usize n, 
     int found = 0;
 
     usize d = ctx->X->cols;
+    usize num_feat = tree_select_features(ctx->cols, d, ctx->max_features, ctx->rng);
     TreeSplitPoint *points = (TreeSplitPoint *)arena_alloc(ctx->a, n * sizeof(TreeSplitPoint));
 
-    for (usize j = 0; j < d; j++) {
+    for (usize fi = 0; fi < num_feat; fi++) {
+        usize j = ctx->cols[fi];
         for (usize i = 0; i < n; i++) {
             points[i].value = mat_get(ctx->X, idx[i], j);
             points[i].idx = idx[i];
@@ -160,7 +177,8 @@ static TreeNode *tree_build_classify(TreeClassifyCtx *ctx, usize *idx, usize n, 
 }
 
 Tree tree_fit_classify(Arena *a, const Mat *X, const Vec *y, usize num_classes,
-                       TreeCriterion criterion, usize max_depth, usize min_samples_split) {
+                       TreeCriterion criterion, usize max_depth, usize min_samples_split,
+                       usize max_features, Rng *rng) {
     assert(X->rows == y->len);
     assert(X->rows > 0);
     assert(criterion == TREE_GINI || criterion == TREE_ENTROPY);
@@ -175,10 +193,14 @@ Tree tree_fit_classify(Arena *a, const Mat *X, const Vec *y, usize num_classes,
     ctx.criterion = criterion;
     ctx.max_depth = max_depth;
     ctx.min_samples_split = min_samples_split;
+    ctx.max_features = max_features;
+    ctx.rng = rng;
     ctx.a = a;
     ctx.count_total = (usize *)arena_alloc(a, num_classes * sizeof(usize));
     ctx.count_left = (usize *)arena_alloc(a, num_classes * sizeof(usize));
     ctx.count_right = (usize *)arena_alloc(a, num_classes * sizeof(usize));
+    ctx.cols = (usize *)arena_alloc(a, X->cols * sizeof(usize));
+    for (usize j = 0; j < X->cols; j++) ctx.cols[j] = j;
 
     Tree model;
     model.criterion = criterion;
@@ -191,7 +213,10 @@ typedef struct {
     const Vec *y;
     usize max_depth;
     usize min_samples_split;
+    usize max_features;
+    Rng *rng;
     Arena *a;
+    usize *cols;
 } TreeRegressCtx;
 
 static f64 tree_variance(f64 sum, f64 sumsq, usize n) {
@@ -227,9 +252,11 @@ static TreeNode *tree_build_regress(TreeRegressCtx *ctx, usize *idx, usize n, us
     int found = 0;
 
     usize d = ctx->X->cols;
+    usize num_feat = tree_select_features(ctx->cols, d, ctx->max_features, ctx->rng);
     TreeSplitPoint *points = (TreeSplitPoint *)arena_alloc(ctx->a, n * sizeof(TreeSplitPoint));
 
-    for (usize j = 0; j < d; j++) {
+    for (usize fi = 0; fi < num_feat; fi++) {
+        usize j = ctx->cols[fi];
         for (usize i = 0; i < n; i++) {
             points[i].value = mat_get(ctx->X, idx[i], j);
             points[i].idx = idx[i];
@@ -277,7 +304,8 @@ static TreeNode *tree_build_regress(TreeRegressCtx *ctx, usize *idx, usize n, us
     return node;
 }
 
-Tree tree_fit_regress(Arena *a, const Mat *X, const Vec *y, usize max_depth, usize min_samples_split) {
+Tree tree_fit_regress(Arena *a, const Mat *X, const Vec *y, usize max_depth, usize min_samples_split,
+                      usize max_features, Rng *rng) {
     assert(X->rows == y->len);
     assert(X->rows > 0);
 
@@ -289,7 +317,11 @@ Tree tree_fit_regress(Arena *a, const Mat *X, const Vec *y, usize max_depth, usi
     ctx.y = y;
     ctx.max_depth = max_depth;
     ctx.min_samples_split = min_samples_split;
+    ctx.max_features = max_features;
+    ctx.rng = rng;
     ctx.a = a;
+    ctx.cols = (usize *)arena_alloc(a, X->cols * sizeof(usize));
+    for (usize j = 0; j < X->cols; j++) ctx.cols[j] = j;
 
     Tree model;
     model.criterion = TREE_VARIANCE;
