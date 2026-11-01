@@ -81,4 +81,16 @@ Mat mat_rand_normal(Arena *a, usize rows, usize cols, Rng *r, f64 mean, f64 stdd
 void vec_print(const Vec *v);
 void mat_print(const Mat *m);
 
+/* Eigendecomposition of a symmetric matrix. Column i of vectors is the
+   unit eigenvector for values.data[i]; values come back sorted descending. */
+typedef struct {
+    Vec values;
+    Mat vectors;
+} Eigen;
+
+/* Jacobi rotation method, assumes x is square and symmetric. Sweeps every
+   off-diagonal pair until their squared sum drops below tol or max_sweeps
+   is hit. */
+Eigen mat_eigen_sym(Arena *a, const Mat *x, usize max_sweeps, f64 tol);
+
 #endif /* CAMLL_SRC_MATRIX_H */

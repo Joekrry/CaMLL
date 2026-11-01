@@ -117,6 +117,65 @@ int main(void) {
     for (usize i = 0; i < rncount; i++) rnsum += rn.data[i];
     CHECK_NEAR(rnsum / (f64)rncount, 0.0, 0.3); /* sample mean near 0 */
 
+    /* eigendecomposition of a diagonal matrix: no rotation needed, so
+       eigenvalues come back sorted and eigenvectors are the matching
+       standard basis columns */
+    Mat diag = mat_zeros(&a, 3, 3);
+    mat_set(&diag, 0, 0, 5.0);
+    mat_set(&diag, 1, 1, 1.0);
+    mat_set(&diag, 2, 2, 3.0);
+    Eigen eig_diag = mat_eigen_sym(&a, &diag, 100, 1e-12);
+    CHECK_NEAR(eig_diag.values.data[0], 5.0, 1e-9);
+    CHECK_NEAR(eig_diag.values.data[1], 3.0, 1e-9);
+    CHECK_NEAR(eig_diag.values.data[2], 1.0, 1e-9);
+    CHECK_NEAR(mat_get(&eig_diag.vectors, 0, 0), 1.0, 1e-9);
+    CHECK_NEAR(mat_get(&eig_diag.vectors, 2, 1), 1.0, 1e-9);
+    CHECK_NEAR(mat_get(&eig_diag.vectors, 1, 2), 1.0, 1e-9);
+
+    /* 2x2 case with known eigenvalues 3 and 1; check Av = lambda*v
+       directly so eigenvector sign doesn't matter */
+    Mat sym2 = mat_alloc(&a, 2, 2);
+    mat_set(&sym2, 0, 0, 2.0); mat_set(&sym2, 0, 1, 1.0);
+    mat_set(&sym2, 1, 0, 1.0); mat_set(&sym2, 1, 1, 2.0);
+    Eigen eig2 = mat_eigen_sym(&a, &sym2, 100, 1e-12);
+    CHECK_NEAR(eig2.values.data[0], 3.0, 1e-9);
+    CHECK_NEAR(eig2.values.data[1], 1.0, 1e-9);
+    for (usize i = 0; i < 2; i++) {
+        f64 v0 = mat_get(&eig2.vectors, 0, i);
+        f64 v1 = mat_get(&eig2.vectors, 1, i);
+        f64 lambda = eig2.values.data[i];
+        CHECK_NEAR(mat_get(&sym2, 0, 0) * v0 + mat_get(&sym2, 0, 1) * v1, lambda * v0, 1e-9);
+        CHECK_NEAR(mat_get(&sym2, 1, 0) * v0 + mat_get(&sym2, 1, 1) * v1, lambda * v1, 1e-9);
+        CHECK_NEAR(v0 * v0 + v1 * v1, 1.0, 1e-9);
+    }
+
+    /* general 3x3 case: reconstruct A = V diag(values) V^T and check V is
+       orthonormal, with no analytic eigenvalues needed */
+    Mat sym3 = mat_alloc(&a, 3, 3);
+    mat_set(&sym3, 0, 0, 4.0); mat_set(&sym3, 0, 1, 1.0); mat_set(&sym3, 0, 2, -2.0);
+    mat_set(&sym3, 1, 0, 1.0); mat_set(&sym3, 1, 1, 3.0); mat_set(&sym3, 1, 2, 0.0);
+    mat_set(&sym3, 2, 0, -2.0); mat_set(&sym3, 2, 1, 0.0); mat_set(&sym3, 2, 2, 2.0);
+    Eigen eig3 = mat_eigen_sym(&a, &sym3, 100, 1e-12);
+
+    Mat dmat = mat_zeros(&a, 3, 3);
+    for (usize i = 0; i < 3; i++) mat_set(&dmat, i, i, eig3.values.data[i]);
+    Mat vt = mat_transpose(&a, &eig3.vectors);
+    Mat vd = mat_matmul(&a, &eig3.vectors, &dmat);
+    Mat recon = mat_matmul(&a, &vd, &vt);
+    for (usize i = 0; i < 3; i++) {
+        for (usize j = 0; j < 3; j++) {
+            CHECK_NEAR(mat_get(&recon, i, j), mat_get(&sym3, i, j), 1e-9);
+        }
+    }
+
+    Mat vtv = mat_matmul(&a, &vt, &eig3.vectors);
+    Mat id3 = mat_eye(&a, 3);
+    for (usize i = 0; i < 3; i++) {
+        for (usize j = 0; j < 3; j++) {
+            CHECK_NEAR(mat_get(&vtv, i, j), mat_get(&id3, i, j), 1e-9);
+        }
+    }
+
     arena_destroy(&a);
     return TEST_SUMMARY("matrix");
 }

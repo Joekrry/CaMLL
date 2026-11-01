@@ -243,6 +243,94 @@ Mat mat_rand_normal(Arena *a, usize rows, usize cols, Rng *r, f64 mean, f64 stdd
     return m;
 }
 
+static f64 mat_offdiag_sq_sum(const Mat *a, usize n) {
+    f64 s = 0.0;
+    for (usize i = 0; i < n; i++) {
+        for (usize j = i + 1; j < n; j++) {
+            f64 v = mat_get(a, i, j);
+            s += v * v;
+        }
+    }
+    return s;
+}
+
+static void mat_jacobi_rotate(Mat *a, Mat *v, usize n, usize p, usize q) {
+    f64 apq = mat_get(a, p, q);
+    if (apq == 0.0) return;
+
+    f64 app = mat_get(a, p, p);
+    f64 aqq = mat_get(a, q, q);
+    f64 theta = (aqq - app) / (2.0 * apq);
+    f64 t = (theta >= 0.0 ? 1.0 : -1.0) / (fabs(theta) + sqrt(theta * theta + 1.0));
+    f64 c = 1.0 / sqrt(t * t + 1.0);
+    f64 s = t * c;
+
+    mat_set(a, p, p, app - t * apq);
+    mat_set(a, q, q, aqq + t * apq);
+    mat_set(a, p, q, 0.0);
+    mat_set(a, q, p, 0.0);
+
+    for (usize i = 0; i < n; i++) {
+        if (i == p || i == q) continue;
+        f64 aip = mat_get(a, i, p);
+        f64 aiq = mat_get(a, i, q);
+        f64 new_ip = c * aip - s * aiq;
+        f64 new_iq = s * aip + c * aiq;
+        mat_set(a, i, p, new_ip);
+        mat_set(a, p, i, new_ip);
+        mat_set(a, i, q, new_iq);
+        mat_set(a, q, i, new_iq);
+    }
+
+    for (usize i = 0; i < n; i++) {
+        f64 vip = mat_get(v, i, p);
+        f64 viq = mat_get(v, i, q);
+        mat_set(v, i, p, c * vip - s * viq);
+        mat_set(v, i, q, s * vip + c * viq);
+    }
+}
+
+Eigen mat_eigen_sym(Arena *a, const Mat *x, usize max_sweeps, f64 tol) {
+    assert(x->rows == x->cols);
+    usize n = x->rows;
+
+    Mat work = mat_copy(a, x);
+    Mat v = mat_eye(a, n);
+
+    for (usize sweep = 0; sweep < max_sweeps; sweep++) {
+        if (mat_offdiag_sq_sum(&work, n) <= tol) break;
+        for (usize p = 0; p + 1 < n; p++) {
+            for (usize q = p + 1; q < n; q++) {
+                mat_jacobi_rotate(&work, &v, n, p, q);
+            }
+        }
+    }
+
+    usize *order = (usize *)arena_alloc(a, n * sizeof(usize));
+    for (usize i = 0; i < n; i++) order[i] = i;
+    for (usize i = 0; i < n; i++) {
+        usize best = i;
+        for (usize j = i + 1; j < n; j++) {
+            if (mat_get(&work, order[j], order[j]) > mat_get(&work, order[best], order[best])) best = j;
+        }
+        usize t = order[i];
+        order[i] = order[best];
+        order[best] = t;
+    }
+
+    Eigen eig;
+    eig.values = vec_alloc(a, n);
+    eig.vectors = mat_alloc(a, n, n);
+    for (usize i = 0; i < n; i++) {
+        usize src = order[i];
+        eig.values.data[i] = mat_get(&work, src, src);
+        for (usize r = 0; r < n; r++) {
+            mat_set(&eig.vectors, r, i, mat_get(&v, r, src));
+        }
+    }
+    return eig;
+}
+
 void vec_print(const Vec *v) {
     printf("[");
     for (usize i = 0; i < v->len; i++) {

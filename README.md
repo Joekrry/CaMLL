@@ -33,7 +33,7 @@ types.h  --->  alloc/  --->  src/  --->  tests/
 **Main components**
 - **`types.h`** - defines the numeric aliases (`i8` to `i64`, `u8` to `u64`, `f32`, `f64`, `usize`, `isize`). Wraps `<stdint.h>` and `<stddef.h>` so the rest of the library never spells out a raw C integer type.
 - **`alloc/arena.h`** - bump allocator that hands out memory by advancing an offset into `mmap`ed blocks. There is no per-object free; memory is reclaimed in bulk with `arena_reset` or rolled back to an `arena_mark`.
-- **`src/matrix.h`** - the `Vec` and `Mat` types, both dense `f64` with `Mat` stored row-major. Allocation is arena-backed, so the types carry no ownership and are freed with the arena rather than individually. Provides the core matrix operations (add, sub, scale, matmul, transpose), vector operations (dot, norms, elementwise mul/div, outer product), a seeded xorshift PRNG and debug printing.
+- **`src/matrix.h`** - the `Vec` and `Mat` types, both dense `f64` with `Mat` stored row-major. Allocation is arena-backed, so the types carry no ownership and are freed with the arena rather than individually. Provides the core matrix operations (add, sub, scale, matmul, transpose), vector operations (dot, norms, elementwise mul/div, outer product), a seeded xorshift PRNG, symmetric eigendecomposition via the Jacobi rotation method, and debug printing.
 - **`src/dataset.h`** - the `Dataset` type (feature matrix plus target vector), CSV parsing, shuffled train/test splitting and per-column standardization.
 - **`src/metrics.h`** - shared evaluation metrics: mean squared error, binary cross-entropy, accuracy, and precision/recall/F1 via a binary confusion matrix.
 - **`src/linreg.h`** - linear regression, fit either in closed form via the normal equations or by batch gradient descent with an optional L2 (ridge) penalty on the weights.
@@ -95,7 +95,7 @@ make test
 | Fixture | Covers |
 |---------|--------|
 | `tests/test_types.c` | Width and signedness of every alias in `types.h`. |
-| `tests/test_matrix.c` | Arena-backed allocation, add, sub, scale, matmul, transpose, dot, norms, elementwise ops, outer product and the seeded PRNG. |
+| `tests/test_matrix.c` | Arena-backed allocation, add, sub, scale, matmul, transpose, dot, norms, elementwise ops, outer product, the seeded PRNG, and symmetric eigendecomposition: a diagonal matrix (no rotation needed), a 2x2 case checked against the eigenvalue equation directly, and a 3x3 case checked by reconstructing `A` from `V diag(values) V^T` and confirming `V` is orthonormal. |
 | `tests/test_dataset.c` | CSV parsing with the label in varying columns, train/test split row pairing, and standardization including the zero-variance guard. |
 | `tests/test_metrics.c` | Mean squared error, binary cross-entropy on confident correct/wrong predictions, accuracy, confusion matrix counts, and precision/recall/F1 including the no-positives degenerate case. |
 | `tests/test_linreg.c` | Closed-form and gradient descent fits on exactly-linear data, prediction, mean squared error, and weight shrinkage under an L2 penalty. |
